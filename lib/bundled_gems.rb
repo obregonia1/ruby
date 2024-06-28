@@ -63,7 +63,7 @@ module Gem::BUNDLED_GEMS
     [::Kernel.singleton_class, ::Kernel].each do |kernel_class|
       kernel_class.send(:alias_method, :no_warning_require, :require)
       kernel_class.send(:define_method, :require) do |name|
-        if message = ::Gem::BUNDLED_GEMS.warning?(name, specs: spec_names) # rubocop:disable Style/HashSyntax
+        if message = ::Gem::BUNDLED_GEMS.warning?(name, specs: spec_names)
           warn message, :uplevel => 1
         end
         kernel_class.send(:no_warning_require, name)
@@ -96,7 +96,7 @@ module Gem::BUNDLED_GEMS
     # and `require "syslog"` to `require "#{ARCHDIR}/syslog.so"`.
     name = feature.delete_prefix(ARCHDIR)
     name.delete_prefix!(LIBDIR)
-    name.tr!("/", "-")
+    name.tr!("/", "-") if SINCE.keys.any?(name.tr("/", "-"))
     name.sub!(LIBEXT, "")
     return if specs.include?(name)
     _t, path = $:.resolve_feature_path(feature)
